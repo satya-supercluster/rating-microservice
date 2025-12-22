@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: ratingmicroservice
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: ecommerce
+
+server:
+  port: 8081
