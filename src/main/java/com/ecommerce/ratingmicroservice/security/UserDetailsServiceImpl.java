@@ -25,12 +25,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail()) // Spring Security uses username field → we use email as login ID
-                .password(user.getPassword())
-                .authorities(getAuthorities(user.getRoles()))
-//                .disabled(!user.isEmailVerified())
-                .build();
+        return new UserPrincipal(
+                user.getId(),
+                user.getEmail(),
+                user.getPassword(),
+                user.isEmailVerified(),
+                getAuthorities(user.getRoles())
+        );
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Set<String> roles) {

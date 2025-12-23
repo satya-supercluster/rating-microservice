@@ -67,8 +67,19 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public boolean validateToken(String token, UserDetails userDetails) {
+
+        String username = extractUsername(token);
+
+        if (!username.equals(userDetails.getUsername())) {
+            return false;
+        }
+
+        if (isTokenExpired(token)) {
+            return false;
+        }
+
+        return userDetails.isEnabled(); // email not verified, user disabled
     }
+
 }

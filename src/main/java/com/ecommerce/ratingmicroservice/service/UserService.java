@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -36,7 +35,7 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .roles(roles)
                 .createdAt(LocalDateTime.now())
-                .isEmailVerified(false) // In real app, send verification email
+                .isEmailVerified(true) // In real app, send verification email and make false here
                 .build();
 
         userRepository.save(user);

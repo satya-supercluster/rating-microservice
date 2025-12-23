@@ -4,6 +4,7 @@ import com.ecommerce.ratingmicroservice.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,12 +30,23 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
+                        // ---------- AUTH ----------
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        .requestMatchers("/api/products/**").permitAll() // product view
-                        .requestMatchers("/api/reviews/**").authenticated()
                         .requestMatchers("/api/auth/me").authenticated()
-                        // Optional: Admin routes
-                        // .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // ---------- PRODUCTS ----------
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+
+                        // ---------- REVIEWS ----------
+                        .requestMatchers("/api/reviews/**").authenticated()
+
+                        // ---------- USERS / ADMIN MANAGEMENT ----------
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN") // list users
+                        .requestMatchers("/api/users/**").authenticated() // self + admin
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
