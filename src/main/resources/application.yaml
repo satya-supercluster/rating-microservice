@@ -3,13 +3,13 @@ spring:
     name: ratingmicroservice
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: ecommerce
+      host: ${DB_HOST}
+      port: ${DB_PORT}
+      database: ${DB_NAME}
 
 server:
-  port: 8081
+  port: ${SERVER_PORT}
 
 jwt:
-  secret: hellooooThisIsMySecretYarrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-  expiration: 86400000  # 24 hours in ms
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}

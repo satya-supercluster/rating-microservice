@@ -20,7 +20,7 @@ public class JwtUtil {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private long expiration; // in ms, e.g., 86400000 = 24h
+    private long expiration;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
@@ -74,7 +74,7 @@ public class JwtUtil {
             return false;
         }
 
-        if (isTokenExpired(token)) {
+        if (isTokenExpired(token).equals(true)) {
             return false;
         }
 
