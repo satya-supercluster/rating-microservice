@@ -18,6 +18,7 @@ public class Product{
     @Id
     private String id;
 
+    @Indexed
     @Field("name")
     private String name;
 

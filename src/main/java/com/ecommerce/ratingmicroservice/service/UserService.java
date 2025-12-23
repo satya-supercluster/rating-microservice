@@ -37,7 +37,6 @@ public class UserService {
                 .createdAt(LocalDateTime.now())
                 .isEmailVerified(true) // In real app, send verification email and make false here
                 .build();
-
         userRepository.save(user);
     }
 }
