@@ -3,9 +3,10 @@ spring:
     name: ratingmicroservice
   data:
     mongodb:
-      host: ${DB_HOST}
-      port: ${DB_PORT}
-      database: ${DB_NAME}
+      uri: ${MONGO_URI}
+#      host: ${DB_HOST}
+#      port: ${DB_PORT}
+#      database: ${DB_NAME}
 
 server:
   port: ${SERVER_PORT}
