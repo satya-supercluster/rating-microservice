@@ -44,6 +44,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserPrincipal userPrincipal =
                     (UserPrincipal) userDetailsService.loadUserByUsername(userEmail);
+
+            if (!userPrincipal.isEnabled()) {
+                throw new RuntimeException("Email not verified. Please verify.");
+            }
+
             if (jwtUtil.validateToken(jwt, userPrincipal)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userPrincipal,
