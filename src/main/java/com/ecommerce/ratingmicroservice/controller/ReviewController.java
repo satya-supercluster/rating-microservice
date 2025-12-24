@@ -2,6 +2,7 @@
 
 import com.ecommerce.ratingmicroservice.dto.request.ReviewRequest;
 import com.ecommerce.ratingmicroservice.dto.response.ReviewResponse;
+import com.ecommerce.ratingmicroservice.entity.Review;
 import com.ecommerce.ratingmicroservice.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,10 +58,20 @@ public class ReviewController {
         List<ReviewResponse> reviews = reviewService.getReviewsByUser(userId);
         return ResponseEntity.ok(reviews);
     }
+
+    // PATCH /api/reviews/abc123/moderate?status=APPROVED
+    // PATCH /api/reviews/abc123/moderate?status=REJECTED
+    // With Appropriate Token
+    @PatchMapping("/{id}/moderate")
+    public ResponseEntity<ReviewResponse> moderateReview(
+            @PathVariable String id,
+            @RequestParam Review.Status status) {
+        ReviewResponse response = reviewService.moderateReview(id, status);
+        return ResponseEntity.ok(response);
+    }
 }
 
 
 //The @PreAuthorize uses SpEL:
 //#userId binds to path variable
 //authentication.principal.id accesses UserPrincipal.getId()
-//(Ensure UserPrincipal exposes getId(), which it does via Lombok @Getter)

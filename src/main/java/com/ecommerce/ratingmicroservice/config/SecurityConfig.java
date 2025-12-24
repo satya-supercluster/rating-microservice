@@ -42,6 +42,7 @@ public class SecurityConfig {
 
                         // ---------- REVIEWS ----------
                         .requestMatchers("/api/reviews/**").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/reviews/**/moderate").hasAnyRole("MODERATOR", "ADMIN")
 
                         // ---------- USERS / ADMIN MANAGEMENT ----------
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN") // list users

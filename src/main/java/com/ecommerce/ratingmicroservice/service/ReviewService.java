@@ -205,4 +205,37 @@ public class ReviewService {
     private ReviewResponse mapToResponse(Review review) {
         return ReviewMapperUtil.toResponse(review);
     }
+
+    // --- Moderate Review ---
+    @Transactional
+    public ReviewResponse moderateReview(String reviewId, Review.Status newStatus) {
+        // Only MODERATOR/ADMIN reach here (enforced by SecurityConfig)
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        if (review.getStatus() == newStatus) {
+            return mapToResponse(review); // no-op if same status
+        }
+
+        String productId = review.getProduct().getId();
+
+        // Only allow transition to APPROVED or REJECTED from PENDING (optional stricter policy)
+        if (review.getStatus() != Review.Status.PENDING) {
+            throw new RuntimeException("Only PENDING reviews can be moderated.");
+        }
+
+        if (newStatus != Review.Status.APPROVED && newStatus != Review.Status.REJECTED) {
+            throw new IllegalArgumentException("Invalid moderation status: " + newStatus);
+        }
+
+        // Update status & timestamp
+        review.setStatus(newStatus);
+        review.setUpdatedAt(LocalDateTime.now());
+        review = reviewRepository.save(review);
+
+        // Recalculate avg rating only if status changed to/from APPROVED
+        updateProductAverageRating(productId);
+
+        return mapToResponse(review);
+    }
 }
