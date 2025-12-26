@@ -1,10 +1,11 @@
 package com.ecommerce.ratingmicroservice.controller;
 
 import com.ecommerce.ratingmicroservice.dto.request.ProductRequest;
-import com.ecommerce.ratingmicroservice.entity.Product;
+import com.ecommerce.ratingmicroservice.dto.response.PageResponse;
+import com.ecommerce.ratingmicroservice.dto.response.ProductResponse;
 import com.ecommerce.ratingmicroservice.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.net.URI;
 
+/**
+ * Product REST controller - remains thin and cache-agnostic.
+ * All caching logic is handled at the service layer.
+ * Returns DTOs instead of MongoDB entities.
+ */
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -22,15 +28,19 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody ProductRequest request) {
-        Product saved = productService.createProduct(request);
-        return ResponseEntity.created(URI.create("/api/products/" + saved.getId())).body(saved);
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
+        ProductResponse response = productService.createProduct(request);
+        return ResponseEntity
+                .created(URI.create("/api/products/" + response.getId()))
+                .body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody ProductRequest request) {
-        Product updated = productService.updateProduct(id, request);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable String id,
+            @Valid @RequestBody ProductRequest request) {
+        ProductResponse response = productService.updateProduct(id, request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
@@ -40,12 +50,13 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable String id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable String id) {
+        ProductResponse response = productService.getProductById(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<Page<Product>> getAllProducts(
+    public ResponseEntity<PageResponse<ProductResponse>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -53,14 +64,19 @@ public class ProductController {
 
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
+
+        PageResponse<ProductResponse> response = productService.getAllProducts(pageable);
+        return ResponseEntity.ok(response);
     }
 
-    //Pagination: ?page=0&size=20
-    //Sorting: ?sortBy=price&direction=desc
-    //Flexible search: /search?name=phone&category=electronics&minPrice=100&maxPrice=500
+    /**
+     * Flexible search endpoint
+     * Examples:
+     * - /search?name=phone&category=electronics&minPrice=100&maxPrice=500
+     * - /search?page=0&size=20&sortBy=price&direction=desc
+     */
     @GetMapping("/search")
-    public ResponseEntity<Page<Product>> searchProducts(
+    public ResponseEntity<PageResponse<ProductResponse>> searchProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) BigDecimal minPrice,
@@ -73,7 +89,9 @@ public class ProductController {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Product> results = productService.searchProducts(name, category, minPrice, maxPrice, pageable);
-        return ResponseEntity.ok(results);
+        PageResponse<ProductResponse> response = productService.searchProducts(
+                name, category, minPrice, maxPrice, pageable
+        );
+        return ResponseEntity.ok(response);
     }
 }

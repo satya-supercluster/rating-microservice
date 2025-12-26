@@ -18,7 +18,7 @@ spring:
           min-idle: 0
           max-wait: -1ms
   cache:
-    type: simple
+    type: redis
     redis:
       time-to-live: 3600000
       key-prefix: "ecommerce:"
@@ -46,3 +46,22 @@ jwt:
 
 app:
   base-url: ${BASE_URL}:${SERVER_PORT}/api/auth
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.ecommerce.ratingmicroservice: DEBUG
+
+    # Spring Cache debugging
+    org.springframework.cache: TRACE
+
+    # Redis debugging
+    org.springframework.data.redis: DEBUG
+    io.lettuce.core: DEBUG
+
+    # See actual cache operations
+    org.springframework.cache.interceptor: TRACE
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
