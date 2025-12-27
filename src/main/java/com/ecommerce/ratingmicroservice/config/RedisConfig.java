@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -53,7 +54,7 @@ public class RedisConfig {
                 new GenericJackson2JsonRedisSerializer(objectMapper);
 
         RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .prefixCacheNameWith("${spring.cache.redis.key-prefix}")
+                .prefixCacheNameWith("ecommerce:")
                 .entryTtl(Duration.ofMinutes(30)) // Default TTL: 30 minutes
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
