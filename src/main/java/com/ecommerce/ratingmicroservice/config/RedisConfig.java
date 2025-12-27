@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -75,6 +74,12 @@ public class RedisConfig {
                         cacheConfig.entryTtl(Duration.ofMinutes(15)))
                 .withCacheConfiguration("productList",
                         cacheConfig.entryTtl(Duration.ofMinutes(10)))
+                .withCacheConfiguration("reviews",
+                        cacheConfig.entryTtl(Duration.ofMinutes(30)))
+                .withCacheConfiguration("reviewsByProduct",
+                        cacheConfig.entryTtl(Duration.ofMinutes(20)))
+                .withCacheConfiguration("reviewsByUser",
+                        cacheConfig.entryTtl(Duration.ofMinutes(15)))
                 .build();
     }
 }
